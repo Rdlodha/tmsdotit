@@ -129,22 +129,22 @@ function createRefreshToken(user) {
 }
 
 function setRefreshCookie(res, refreshToken) {
-    const isProduction = NODE_ENV === "production";
+    const isLocal = CLIENT_ORIGIN.includes("localhost") || CLIENT_ORIGIN.includes("127.0.0.1");
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        secure: !isLocal,
+        sameSite: isLocal ? "lax" : "none",
         maxAge: REFRESH_TOKEN_TTL_SECONDS * 1000,
         path: "/auth",
     });
 }
 
 function clearRefreshCookie(res) {
-    const isProduction = NODE_ENV === "production";
+    const isLocal = CLIENT_ORIGIN.includes("localhost") || CLIENT_ORIGIN.includes("127.0.0.1");
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        secure: !isLocal,
+        sameSite: isLocal ? "lax" : "none",
         path: "/auth",
     });
 }
