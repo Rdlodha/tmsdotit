@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState , useRef} from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ export default function TaskForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
 
   const loadTasks = useCallback(async () => {
     setLoading(true);
@@ -48,12 +49,12 @@ export default function TaskForm() {
       return;
     }
 
-      // 1. Create a FormData object
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("description", description);
-  formData.append("completed", completed);
-  if (file) formData.append("taskImage", file);
+    // 1. Create a FormData object
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("completed", completed);
+    if (file) formData.append("taskImage", file);
 
     setSaving(true);
     setError("");
@@ -74,6 +75,7 @@ export default function TaskForm() {
       setTitle("");
       setDescription("");
       setFile(null);
+      setFilePreview(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -152,18 +154,32 @@ export default function TaskForm() {
               <Switch id="task-status" checked={completed} onCheckedChange={setCompleted} />
               <label htmlFor="task-status">Done</label>
             </div>
-            
+
           </div>
           <div className="flex flex-col w-full">
-    <label htmlFor="task-image">Task Image</label>
-    <Input 
-      type="file" 
-      id="task-image" 
-      onChange={(e) => setFile(e.target.files[0])}
-      ref={fileInputRef}
-     // Don't forget to add a 'file' state!
-    />
-  </div>
+            <label htmlFor="task-image">Task Image</label>
+            <Input
+              type="file"
+              id="task-image"
+              accept="image/*"
+              onChange={(e) => {
+                const selected = e.target.files[0];
+                setFile(selected);
+                setFilePreview(selected ? URL.createObjectURL(selected) : null);
+              }}
+              ref={fileInputRef}
+            />
+            {filePreview && (
+              <div className="mt-1.5 relative inline-block">
+                <img
+                  src={filePreview}
+                  alt="Preview"
+                  className="h-12 w-12 object-cover rounded-xl ring-1 ring-gray-200 shadow"
+                />
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[9px] font-semibold px-1 rounded-full leading-4">NEW</span>
+              </div>
+            )}
+          </div>
           <Button type="submit" className="mt-3" disabled={saving}>
             {saving ? "Saving..." : "Add Task"}
           </Button>
@@ -184,6 +200,22 @@ export default function TaskForm() {
                 {task.title}
               </p>
               {task.description ? <p className="text-sm text-gray-600">{task.description}</p> : null}
+              {task.image && (
+                <button
+                  onClick={() => window.open(`${API_BASE_URL}/uploads/${task.image}`, "_blank")}
+                  className="mt-1.5 relative inline-block group/img rounded-xl overflow-hidden ring-1 ring-gray-100 shadow hover:shadow-md transition-shadow"
+                  title="View full image"
+                >
+                  <img
+                    src={`${API_BASE_URL}/uploads/${task.image}`}
+                    alt="Task attachment"
+                    className="h-12 w-12 object-cover transition-transform duration-200 group-hover/img:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors duration-200 flex items-center justify-center">
+                    <svg className="w-3.5 h-3.5 text-white opacity-0 group-hover/img:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  </div>
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Button

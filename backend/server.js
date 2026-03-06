@@ -32,6 +32,10 @@ app.use(
 );
 app.use(express.json());
 
+// ─── Static files (uploads) ────────────────────────────────────────────────
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // ─── Routes ────────────────────────────────────────────────────────────────────
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
