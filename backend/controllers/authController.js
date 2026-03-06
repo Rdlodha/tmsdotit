@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { User } = require("../models");
 const sendEmail = require("../utils/sendEmail");
 
+
 // ─── Config ────────────────────────────────────────────────────────────────────
 const PORT = Number(process.env.PORT || 5000);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
@@ -129,23 +130,23 @@ function createRefreshToken(user) {
 }
 
 function setRefreshCookie(res, refreshToken) {
-    const isLocal = CLIENT_ORIGIN.includes("localhost") || CLIENT_ORIGIN.includes("127.0.0.1");
+    const isProduction = NODE_ENV === "production";
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: !isLocal,
-        sameSite: isLocal ? "lax" : "none",
+        secure: true,
+        sameSite: 'none',
         maxAge: REFRESH_TOKEN_TTL_SECONDS * 1000,
-        path: "/auth",
+        path: "/",
     });
 }
 
 function clearRefreshCookie(res) {
-    const isLocal = CLIENT_ORIGIN.includes("localhost") || CLIENT_ORIGIN.includes("127.0.0.1");
+    const isProduction = NODE_ENV === "production";
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: !isLocal,
-        sameSite: isLocal ? "lax" : "none",
-        path: "/auth",
+        secure: true,
+        sameSite: 'none',
+        path: "/",
     });
 }
 
@@ -210,13 +211,17 @@ async function register(req, res) {
             verificationToken,
             verificationTokenExpires,
             role: role === "admin" ? "admin" : "user",
+
         });
 
-        const verifyUrl = `http://localhost:${PORT}/auth/verify-email?token=${verificationToken}`;
+        const verifyUrl = `${process.env.BACKEND_ORIGIN}/auth/verify-email?token=${verificationToken}`;
+        // https://your-backend.onrender.com/auth/verify-email
+        // https://tmsdotit-backend.onrender.com/auth/verify-email
         sendEmail({
             to: normalizedEmail,
             subject: "DOT IT – Verify your email address",
-            html: `
+            text:"f",
+            html:`
         <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto;">
           <h2>Welcome to DOT IT, ${String(name).trim()}!</h2>
           <p>Please verify your email address by clicking the button below:</p>
@@ -226,8 +231,8 @@ async function register(req, res) {
           </a>
           <p style="margin-top:16px;font-size:12px;color:#666;">This link expires in 24 hours.</p>
         </div>
-      `,
-        }).catch((err) => console.error("Failed to send verification email:", err.message));
+      `
+        }).catch((err) => console.dir("Failed to send verification email:", err), console.dir(verifyUrl, normalizedEmail));
 
         return res.status(201).json({
             message: "Registration successful! Please check your email to verify your account before logging in.",
