@@ -220,3 +220,5 @@ export default function AdminTaskForm({ onTaskCreated }) {
         </div>
     );
 }
+
+AdminTaskForm.displayName = "AdminTaskForm";

@@ -252,3 +252,5 @@ export default function TaskForm() {
     </div>
   );
 }
+
+TaskForm.displayName = "TaskForm";

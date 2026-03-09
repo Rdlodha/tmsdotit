@@ -83,3 +83,5 @@ export default function AdminTaskList({ refreshTrigger }) {
         </div>
     );
 }
+
+AdminTaskList.displayName = "AdminTaskList";

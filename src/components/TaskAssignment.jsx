@@ -17,6 +17,7 @@ import {
     Users,
     Tag,
 } from "lucide-react";
+//this is task commponent for personal tasks
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -257,7 +258,7 @@ function PersonalTasksPanel() {
                             >
                                 {task.title}
                             </p>
-                            <div className="flex flex-row gap-10 ">
+                            <div className="flex flex-row w-[90%] justify-between ">
                                 {task.description && (
                                     <p className="text-xs text-gray-500 truncate">{task.description}</p>
                                 )}
@@ -305,6 +306,8 @@ function PersonalTasksPanel() {
         </div>
     );
 }
+
+PersonalTasksPanel.displayName = "PersonalTasksPanel";
 
 /* ─── Admin: Assign Task Form ─────────────────────────────── */
 function AdminAssignPanel({ onTaskAssigned }) {
@@ -505,6 +508,8 @@ function AdminAssignPanel({ onTaskAssigned }) {
     );
 }
 
+AdminAssignPanel.displayName = "AdminAssignPanel";
+
 /* ─── Admin: All Assigned Tasks (grouped by member) ─────────── */
 function AdminAssignedTasksPanel({ refreshTrigger }) {
     const { authFetch } = useAuth();
@@ -693,6 +698,8 @@ function AdminAssignedTasksPanel({ refreshTrigger }) {
     );
 }
 
+AdminAssignedTasksPanel.displayName = "AdminAssignedTasksPanel";
+
 /* ─── User: Tasks Assigned to Them ──────────────────────────── */
 function UserAssignedTasksPanel() {
     const { authFetch } = useAuth();
@@ -786,8 +793,9 @@ function UserAssignedTasksPanel() {
                                 task.image.toLowerCase().endsWith(".pdf") ? (
                                     <button
                                         onClick={() => window.open(`${API_BASE_URL}/uploads/${task.image}`, "_blank")}
-                                        className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg px-2 py-1.5 transition-colors"
+                                        className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg px-2 py-1.5 transition-colors float-right"
                                         title="Open PDF"
+                                        
                                     >
                                         <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8.5 17.5h-1v-5h1.8c1.1 0 1.7.6 1.7 1.5s-.6 1.5-1.7 1.5H8.5v2zm0-2.8h.8c.5 0 .8-.3.8-.7s-.3-.7-.8-.7H8.5v1.4zm4.8 2.8h-1.6v-5h1.6c1.4 0 2.2.9 2.2 2.5s-.8 2.5-2.2 2.5zm-.7-.8h.7c.8 0 1.3-.6 1.3-1.7s-.5-1.7-1.3-1.7h-.7v3.4zm5-4.2v.8h-1.8v1.2h1.6v.8h-1.6v2h-1v-4.8h2.8z" /></svg>
                                         Open PDF
@@ -795,7 +803,7 @@ function UserAssignedTasksPanel() {
                                 ) : (
                                     <button
                                         onClick={() => window.open(`${API_BASE_URL}/uploads/${task.image}`, "_blank")}
-                                        className="mt-1.5 relative inline-block group/img rounded-xl overflow-hidden ring-1 ring-gray-100 shadow hover:shadow-md transition-shadow"
+                                        className="mt-1.5 relative inline-block group/img rounded-xl overflow-hidden ring-1 ring-gray-100 shadow hover:shadow-md transition-shadow float-right"
                                         title="View full image"
                                     >
                                         <img
@@ -838,6 +846,8 @@ function UserAssignedTasksPanel() {
     );
 }
 
+UserAssignedTasksPanel.displayName = "UserAssignedTasksPanel";
+
 /* ─── Main Export ────────────────────────────────────────────── */
 export default function TaskAssignment() {
     const { isAdmin } = useAuth();
@@ -861,3 +871,5 @@ export default function TaskAssignment() {
         </div>
     );
 }
+
+TaskAssignment.displayName = "TaskAssignment";

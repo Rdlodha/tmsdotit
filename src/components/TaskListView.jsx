@@ -30,8 +30,8 @@ function FilterBar({ filters, active, onChange }) {
                     key={f.value}
                     onClick={() => onChange(f.value)}
                     className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${active === f.value
-                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                            : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
                         }`}
                 >
                     {f.label}
@@ -40,6 +40,8 @@ function FilterBar({ filters, active, onChange }) {
         </div>
     );
 }
+
+FilterBar.displayName = "FilterBar";
 
 /* ─── Personal Tasks List (read-only) ─────────────────────── */
 function PersonalTasksReadOnly() {
@@ -128,8 +130,8 @@ function PersonalTasksReadOnly() {
                         </div>
                         <span
                             className={`shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium ${task.completed
-                                    ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                                    : "bg-amber-100 text-amber-800 border-amber-300"
+                                ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                : "bg-amber-100 text-amber-800 border-amber-300"
                                 }`}
                         >
                             {task.completed ? "Done" : "Pending"}
@@ -141,7 +143,8 @@ function PersonalTasksReadOnly() {
     );
 }
 
-/* ─── Admin: All Assigned Tasks Read-Only ─────────────────── */
+PersonalTasksReadOnly.displayName = "PersonalTasksReadOnly";
+
 function AdminAssignedReadOnly() {
     const { authFetch } = useAuth();
     const [tasks, setTasks] = useState([]);
@@ -274,7 +277,8 @@ function AdminAssignedReadOnly() {
     );
 }
 
-/* ─── User: Tasks Assigned to Them Read-Only ─────────────── */
+AdminAssignedReadOnly.displayName = "AdminAssignedReadOnly";
+
 function UserAssignedReadOnly() {
     const { authFetch } = useAuth();
     const [tasks, setTasks] = useState([]);
@@ -340,8 +344,8 @@ function UserAssignedReadOnly() {
                         <div className="flex-1 min-w-0">
                             <p
                                 className={`text-sm font-medium truncate ${task.status === "completed"
-                                        ? "line-through text-gray-400"
-                                        : "text-gray-800"
+                                    ? "line-through text-gray-400"
+                                    : "text-gray-800"
                                     }`}
                             >
                                 {task.title}
@@ -374,6 +378,8 @@ function UserAssignedReadOnly() {
     );
 }
 
+UserAssignedReadOnly.displayName = "UserAssignedReadOnly";
+
 /* ─── Main Export ─────────────────────────────────────────── */
 export default function TaskListView() {
     const { isAdmin } = useAuth();
@@ -385,3 +391,5 @@ export default function TaskListView() {
         </div>
     );
 }
+
+TaskListView.displayName = "TaskListView";
