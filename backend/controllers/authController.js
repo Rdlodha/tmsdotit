@@ -214,29 +214,41 @@ async function register(req, res) {
 
         });
 
-        const verifyUrl = `${process.env.BACKEND_ORIGIN}/auth/verify-email?token=${verificationToken}`;
-        // https://your-backend.onrender.com/auth/verify-email
-        // https://tmsdotit-backend.onrender.com/auth/verify-email
-        sendEmail({
-            to: normalizedEmail,
-            subject: "DOT IT – Verify your email address",
-            text:"f",
-            html:`
-        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto;">
-          <h2>Welcome to DOT IT, ${String(name).trim()}!</h2>
-          <p>Please verify your email address by clicking the button below:</p>
-          <a href="${verifyUrl}"
-             style="display:inline-block;padding:12px 24px;background:#4f46e5;color:#fff;text-decoration:none;border-radius:6px;">
-            Verify Email
-          </a>
-          <p style="margin-top:16px;font-size:12px;color:#666;">This link expires in 24 hours.</p>
-        </div>
-      `
-        }).catch((err) => console.dir("Failed to send verification email:", err), console.dir(verifyUrl, normalizedEmail));
+        const verifyUrl = `${process.env.BACKEND_URL}/auth/verify-email?token=${verificationToken}`;
+        console.log("verifyUrl: ", verifyUrl);
 
-        return res.status(201).json({
-            message: "Registration successful! Please check your email to verify your account before logging in.",
-        });
+        try {
+            const emailResult = await sendEmail({
+                to: normalizedEmail,
+                subject: "DOT IT – Verify your email address",
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto;">
+                      <h2>Welcome to DOT IT, ${String(name).trim()}!</h2>
+                      <p>Please verify your email address by clicking the button below:</p>
+                      <a href="${verifyUrl}"
+                         style="display:inline-block;padding:12px 24px;background:#4f46e5;color:#fff;text-decoration:none;border-radius:6px;">
+                        Verify Email
+                      </a>
+                      <p style="margin-top:16px;font-size:12px;color:#666;">This link expires in 24 hours.</p>
+                    </div>`
+            });
+
+            console.log("Email sent successfully:", JSON.stringify(emailResult, null, 2));
+
+            return res.status(201).json({
+                message: "Registration successful! Please check your email to verify your account before logging in.",
+            });
+        } catch (emailError) {
+            console.error("Failed to send verification email:", emailError.message);
+
+            // Delete the user since email verification is critical
+            await User.deleteOne({ _id: user._id });
+
+            return res.status(500).json({
+                message: "Failed to send verification email. Please try registering again.",
+                error: emailError.message
+            });
+        }
     } catch (error) {
         console.error("Registration error:", error.message);
         return res.status(500).json({ message: "Registration failed", error: error.message });
@@ -284,8 +296,8 @@ async function refresh(req, res) {
     if (!refreshToken) {
         return res.status(401).json({ message: "Missing refresh token" });
     }
-
-    try {
+    else{
+        try {
         const payload = verifyJwt(refreshToken, REFRESH_TOKEN_SECRET);
         if (payload.type !== "refresh" || !payload.sub) {
             throw new Error("Invalid refresh token payload");
@@ -308,6 +320,10 @@ async function refresh(req, res) {
         clearRefreshCookie(res);
         return res.status(401).json({ message: "Invalid refresh token" });
     }
+
+    }
+
+    
 }
 
 async function verifyEmail(req, res) {

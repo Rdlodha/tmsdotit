@@ -157,11 +157,11 @@ export default function TaskForm() {
 
           </div>
           <div className="flex flex-col w-full">
-            <label htmlFor="task-image">Task Image</label>
+            <label htmlFor="task-image">Task Attachment</label>
             <Input
               type="file"
               id="task-image"
-              accept="image/*"
+              accept="image/*,application/pdf"
               onChange={(e) => {
                 const selected = e.target.files[0];
                 setFile(selected);
@@ -171,11 +171,17 @@ export default function TaskForm() {
             />
             {filePreview && (
               <div className="mt-1.5 relative inline-block">
-                <img
-                  src={filePreview}
-                  alt="Preview"
-                  className="h-12 w-12 object-cover rounded-xl ring-1 ring-gray-200 shadow"
-                />
+                {file?.type === "application/pdf" ? (
+                  <div className="h-12 w-12 flex items-center justify-center rounded-xl ring-1 ring-gray-200 shadow bg-red-50">
+                    <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8.5 17.5h-1v-5h1.8c1.1 0 1.7.6 1.7 1.5s-.6 1.5-1.7 1.5H8.5v2zm0-2.8h.8c.5 0 .8-.3.8-.7s-.3-.7-.8-.7H8.5v1.4zm4.8 2.8h-1.6v-5h1.6c1.4 0 2.2.9 2.2 2.5s-.8 2.5-2.2 2.5zm-.7-.8h.7c.8 0 1.3-.6 1.3-1.7s-.5-1.7-1.3-1.7h-.7v3.4zm5-4.2v.8h-1.8v1.2h1.6v.8h-1.6v2h-1v-4.8h2.8z" /></svg>
+                  </div>
+                ) : (
+                  <img
+                    src={filePreview}
+                    alt="Preview"
+                    className="h-12 w-12 object-cover rounded-xl ring-1 ring-gray-200 shadow"
+                  />
+                )}
                 <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[9px] font-semibold px-1 rounded-full leading-4">NEW</span>
               </div>
             )}
@@ -201,20 +207,31 @@ export default function TaskForm() {
               </p>
               {task.description ? <p className="text-sm text-gray-600">{task.description}</p> : null}
               {task.image && (
-                <button
-                  onClick={() => window.open(`${API_BASE_URL}/uploads/${task.image}`, "_blank")}
-                  className="mt-1.5 relative inline-block group/img rounded-xl overflow-hidden ring-1 ring-gray-100 shadow hover:shadow-md transition-shadow"
-                  title="View full image"
-                >
-                  <img
-                    src={`${API_BASE_URL}/uploads/${task.image}`}
-                    alt="Task attachment"
-                    className="h-12 w-12 object-cover transition-transform duration-200 group-hover/img:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-white opacity-0 group-hover/img:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                  </div>
-                </button>
+                task.image.toLowerCase().endsWith(".pdf") ? (
+                  <button
+                    onClick={() => window.open(`${API_BASE_URL}/uploads/${task.image}`, "_blank")}
+                    className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg px-2 py-1.5 transition-colors"
+                    title="Open PDF"
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8.5 17.5h-1v-5h1.8c1.1 0 1.7.6 1.7 1.5s-.6 1.5-1.7 1.5H8.5v2zm0-2.8h.8c.5 0 .8-.3.8-.7s-.3-.7-.8-.7H8.5v1.4zm4.8 2.8h-1.6v-5h1.6c1.4 0 2.2.9 2.2 2.5s-.8 2.5-2.2 2.5zm-.7-.8h.7c.8 0 1.3-.6 1.3-1.7s-.5-1.7-1.3-1.7h-.7v3.4zm5-4.2v.8h-1.8v1.2h1.6v.8h-1.6v2h-1v-4.8h2.8z" /></svg>
+                    Open PDF
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => window.open(`${API_BASE_URL}/uploads/${task.image}`, "_blank")}
+                    className="mt-1.5 relative inline-block group/img rounded-xl overflow-hidden ring-1 ring-gray-100 shadow hover:shadow-md transition-shadow"
+                    title="View full image"
+                  >
+                    <img
+                      src={`${API_BASE_URL}/uploads/${task.image}`}
+                      alt="Task attachment"
+                      className="h-12 w-12 object-cover transition-transform duration-200 group-hover/img:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors duration-200 flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5 text-white opacity-0 group-hover/img:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </div>
+                  </button>
+                )
               )}
             </div>
             <div className="flex items-center gap-2">
